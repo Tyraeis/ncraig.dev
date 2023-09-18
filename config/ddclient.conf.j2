@@ -1,0 +1,10 @@
+daemon=900                        # check every 900 seconds
+#syslog=yes                        # log update msgs to syslog
+use=web                           # use checkip.dyndns.org to determine IP
+
+protocol=cloudflare
+zone=ncraig.dev
+ttl=1
+login=token
+password={{ cloudflare_ddns_token }}
+ncraig.dev

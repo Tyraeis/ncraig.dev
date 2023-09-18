@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce
+    volumes:
+      - "{{ dirs.state }}/portainer:/data"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "{{ ports.portainer_http }}:8000"
+      - "{{ ports.portainer_https }}:9443"
+    restart: unless-stopped
+
+  ddclient:
+    container_name: ddclient
+    image: linuxserver/ddclient
+    environment:
+      TZ: "{{ tz }}"
+    volumes:
+      - "/home/docker/ddclient.conf:/config/ddclient.conf"
+    restart: unless-stopped
+
+  syncthing:
+    container_name: syncthing
+    image: linuxserver/syncthing:latest
+    environment:
+      PUID: "{{ users.syncthing.uid }}"
+      GUID: "{{ users.syncthing.uid }}"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ dirs.state }}/syncthing:/config"
+      - "{{ dirs.files }}:/files"
+    ports:
+      - "{{ ports.syncthing }}:8384"
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    environment:
+      TZ: "{{ tz }}"
+      WEBPASSWORD: "{{ pihole_passwd }}"
+    volumes:
+      - "{{ dirs.state }}/pihole/etc:/etc/pihole"
+      - "{{ dirs.state }}/pihole/dnsmasq.d:/etc/dnsmasq.d"
+    ports:
+      - "192.168.1.20:53:53/tcp"
+      - "192.168.1.20:53:53/udp"
+      - "{{ ports.pihole }}:80/tcp"
+    restart: unless-stopped

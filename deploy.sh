@@ -1,0 +1,1 @@
+ansible-playbook $@ -i inventory.yml -u noahc -K --vault-password-file vault_passwd playbook.yml
