@@ -1,0 +1,25 @@
+server {
+    # Reject requests without a Host
+    server_name "";
+    listen 80;
+    listen 443 ssl default_server;
+    include /etc/nginx/custom_common.conf;
+    return 404;
+}
+
+server {
+    server_name www.{{ hostname }} {{ hostname }};
+    listen 443 ssl;
+
+    include /etc/nginx/custom_common.conf;
+
+    autoindex on;
+    sendfile on;
+
+    root {{ dirs.files }}/www;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

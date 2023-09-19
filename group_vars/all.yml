@@ -13,6 +13,15 @@ ports:
   portainer_https: 8443
   syncthing: 8384
   pihole: 8001
+enabled_sites:
+  - base
+  - omv
+  - pihole
+  - portainer
+  - syncthing
+omv_variables:
+  OMV_NGINX_SITE_WEBGUI_SERVERNAME: '!'
+  OMV_NGINX_SITE_WEBGUI_LISTEN_PARAMS: '!'
 
 cloudflare_ddns_token: !vault |
   $ANSIBLE_VAULT;1.1;AES256

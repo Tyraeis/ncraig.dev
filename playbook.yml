@@ -51,17 +51,23 @@
   become: true
 
   tasks:
-#    - name: Set OMV variables
-#      ansible.builtin.lineinfile:
-#        path: /etc/default/openmediavault
-#        regexp: '^{{ item.key }}='
-#        line: '{{ item.key }}="{{ item.value }}"'
-#      loop: '{{ omv_vars | dict2items }}'
-#      vars:
-#        omv_vars:
-#          OMV_NGINX_SITE_WEBGUI_SERVERNAME: '{{ local_hostname }}'
-#          OMV_NGINX_SITE_WEBGUI_LISTEN_PARAMS: ' '
-#      notify: Apply OMV config
+    - name: Clear OMV variables
+      ansible.builtin.lineinfile:
+        path: /etc/default/openmediavault
+        regexp: '^{{ item.key }}='
+        state: absent
+      loop: '{{ omv_variables | dict2items }}'
+      when: 'item.value == "!"'
+      notify: Apply OMV config
+
+    - name: Set OMV variables
+      ansible.builtin.lineinfile:
+        path: /etc/default/openmediavault
+        regexp: '^{{ item.key }}='
+        line: '{{ item.key }}="{{ item.value }}"'
+      loop: '{{ omv_variables | dict2items }}'
+      when: 'item.value != "!"'
+      notify: Apply OMV config
 
     - name: Template nginx configs
       ansible.builtin.template:
@@ -71,19 +77,28 @@
       with_fileglob:
         - 'etc/nginx/*'
         - 'etc/nginx/sites-available/*'
-      notify: Restart nginx
+      notify: Reload nginx
+
+    - name: Get currently active unwanted nginx sites
+      ansible.builtin.find:
+        paths: /etc/nginx/sites-enabled/
+        excludes: '{{ enabled_sites + ["openmediavault-webgui"] }}'
+      register: unwanted_sites
+
+    - name: Disable unwanted nginx sites
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/{{ item.path }}
+        state: absent
+      loop: '{{ unwanted_sites.files }}'
+      notify: Reload nginx
 
     - name: Enable nginx sites
       ansible.builtin.file:
-        src: /etc/nginx/sites-available/{{ item }}.conf
-        dest: /etc/nginx/sites-enabled/{{ item }}.conf
+        src: /etc/nginx/sites-available/{{ item }}
+        dest: /etc/nginx/sites-enabled/{{ item }}
         state: link
-      loop:
-        - omv
-        - pihole
-        - portainer
-        - syncthing
-      notify: Restart nginx
+      loop: "{{ enabled_sites }}"
+      notify: Reload nginx
 
   handlers:
     - name: Apply OMV config
@@ -93,7 +108,7 @@
         omv-salt stage run deploy
       changed_when: true
 
-    - name: Restart nginx
+    - name: Reload nginx
       ansible.builtin.shell: |
         nginx -s reload
       changed_when: true
