@@ -69,6 +69,13 @@
       when: 'item.value != "!"'
       notify: Apply OMV config
 
+    - name: Set OMV port
+      community.general.xml:
+        path: /etc/openmediavault/config.xml
+        xpath: /config/webadmin/port
+        value: '{{ ports.omv }}'
+      notify: Apply OMV config
+
     - name: Template nginx configs
       ansible.builtin.template:
         src: '{{ item }}'

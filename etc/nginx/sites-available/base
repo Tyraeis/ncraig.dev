@@ -1,16 +1,21 @@
 server {
-    # Reject requests without a Host
-    server_name "";
-    listen 80;
+    server_name _;
+    listen 80 default_server;
     listen 443 ssl default_server;
     include /etc/nginx/custom_common.conf;
-    return 404;
+    return 302 https://www.{{ hostname }};
+}
+
+server {
+    server_name .{{ hostname }};
+    listen 80;
+    include /etc/nginx/custom_common.conf;
+    return 301 https://$host$request_uri;
 }
 
 server {
     server_name www.{{ hostname }} {{ hostname }};
     listen 443 ssl;
-
     include /etc/nginx/custom_common.conf;
 
     autoindex on;

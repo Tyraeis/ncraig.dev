@@ -9,6 +9,7 @@ users:
     groups:
       - users
 ports:
+  omv: 8080
   portainer_http: 8000
   portainer_https: 8443
   syncthing: 8384
