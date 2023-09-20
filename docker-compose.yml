@@ -52,3 +52,71 @@ services:
       - "192.168.1.20:53:53/udp"
       - "{{ ports.pihole }}:80/tcp"
     restart: unless-stopped
+
+  minecraft:
+    container_name: minecraft
+    image: itzg/minecraft-server
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+      - "{{ ports.pl3xmap }}:8080"
+    environment:
+      EULA: "TRUE"
+      TYPE: "FABRIC"
+      VERSION: "1.20.1"
+      MEMORY: "8G"
+      USE_AIKAR_FLAGS: "true"
+      ENABLE_ROLLING_LOGS: "true"
+      TZ: "{{ tz }}"
+      DIFFICULTY: "hard"
+      SEED: "14358270646322246249"
+      ALLOW_FLIGHT: "true"
+      ENFORCE_SECURE_PROFILE: "false"
+      WHITELIST: |-
+        Tyraeis
+      OPS: |-
+        Tyraeis
+      CF_API_KEY: '{{ curseforge_api_key | replace("$", "$$") }}'
+      CURSEFORGE_FILES: |-
+        architectury-api
+        polylib
+        ftb-backups-2
+      MODRINTH_PROJECTS: |-
+        fabric-api
+        fabric-language-kotlin
+        lithium
+        sodium
+        ferrite-core
+        starlight
+        memoryleakfix
+        krypton
+        no-chat-reports
+        carpet
+        chunky
+        ledger
+        pl3xmap:beta
+      RCON_CMDS_STARTUP: |-
+        chunky radius 10000
+        chunky spawn
+        chunky start
+        chunky continue
+
+        chunky world world_nether
+        chunky radius 5000
+        chunky spawn
+        chunky start
+        chunky continue
+
+        chunky world world_the_end
+        chunky radius 5000
+        chunky spawn
+        chunky start
+        chunky continue
+      RCON_CMDS_FIRST_CONNECT: |-
+        chunky pause
+      RCON_CMDS_LAST_DISCONNECT: |-
+        chunky continue
+    volumes:
+      - "{{ dirs.state }}/minecraft/data:/data"
+      - "{{ dirs.files }}/www/minecraft/backups:/backups"
