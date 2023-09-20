@@ -2,8 +2,6 @@ hostname: ncraig.dev
 local_hostname: noahc-server.local
 tz: "America/New_York"
 users:
-  docker:
-    uid: 1100
   syncthing:
     uid: 1101
     groups:

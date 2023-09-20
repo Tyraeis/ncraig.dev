@@ -22,17 +22,17 @@
     - name: Write docker config files
       ansible.builtin.template:
         src: ./config/{{ item.path }}.j2
-        dest: /home/docker/{{ item.path }}
+        dest: '{{ dirs.docker }}/{{ item.path }}'
         mode: "{{ item.mode }}"
         owner: "{{ item.owner }}"
         group: "{{ item.owner }}"
       loop:
         - path: cloudflare.ini
-          mode: '0400'
-          owner: 'docker'
+          mode: '0440'
+          owner: '{{ dockeruser }}'
         - path: enable_certbot.sh
           mode: '0775'
-          owner: 'docker'
+          owner: '{{ dockeruser }}'
         - path: ddclient.conf
           mode: '0600'
           owner: 911
@@ -40,16 +40,16 @@
     - name: Write docker-compose.yml
       ansible.builtin.template:
         src: ./docker-compose.yml
-        dest: /home/docker/docker-compose.yml
+        dest: '{{ dirs.docker }}/docker-compose.yml'
         mode: "0440"
-        owner: 'docker'
-        group: 'docker'
+        owner: '{{ dockeruser }}'
+        group: '{{ dockeruser }}'
       notify: Deploy docker
 
   handlers:
     - name: Deploy docker
       community.docker.docker_compose:
-        project_src: /home/docker/
+        project_src: '{{ dirs.docker }}'
         restarted: true
 
 

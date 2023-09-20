@@ -1,3 +1,5 @@
 dirs:
   state: '/srv/dev-disk-by-uuid-8a0cb635-e90d-4bb7-a4ee-1a14e51fa0e6/state'
   files: '/srv/dev-disk-by-uuid-3a5ee48d-c71c-44f3-85a8-617e8d164275/files'
+  docker: '/home/noahc'
+dockeruser: 'noahc'
