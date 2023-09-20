@@ -97,21 +97,6 @@ services:
         ledger
         pl3xmap:beta
       RCON_CMDS_STARTUP: |-
-        chunky radius 10000
-        chunky spawn
-        chunky start
-        chunky continue
-
-        chunky world world_nether
-        chunky radius 5000
-        chunky spawn
-        chunky start
-        chunky continue
-
-        chunky world world_the_end
-        chunky radius 5000
-        chunky spawn
-        chunky start
         chunky continue
       RCON_CMDS_FIRST_CONNECT: |-
         chunky pause
