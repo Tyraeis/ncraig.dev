@@ -18,7 +18,7 @@ services:
     environment:
       TZ: "{{ tz }}"
     volumes:
-      - "/home/docker/ddclient.conf:/config/ddclient.conf"
+      - "{{ dirs.docker }}/ddclient.conf:/config/ddclient.conf"
     restart: unless-stopped
 
   syncthing:
