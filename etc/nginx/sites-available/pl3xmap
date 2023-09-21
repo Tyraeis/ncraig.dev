@@ -1,5 +1,5 @@
 server {
-    server_name pl3xmap.{{ hostname }};
+    server_name mc.{{ hostname }};
     listen 443 ssl;
     include /etc/nginx/custom_common.conf;
 
